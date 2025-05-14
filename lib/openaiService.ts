@@ -11,30 +11,60 @@ const formatHistoryForPrompt = (history: ChatMessage[]): OpenAI.Chat.Completions
     if (msg.isUser && msg.userInput) {
       return {
         role: 'user',
-        content: `Mode: ${msg.userInput.mode}, Mood: ${msg.userInput.mood}, Time: ${msg.userInput.timeOfDay}. Message: ${msg.userInput.message || '(No additional message)'}`
+        // Simplified user message for history to keep it concise
+        content: `Previously, I was in ${msg.userInput.mode} mode, feeling ${msg.userInput.mood}. My message was: "${msg.userInput.message || '(No additional message)'}"`
       };
     }
     if (!msg.isUser && msg.aiResponse) {
-      return { role: 'assistant', content: msg.aiResponse };
+      return { role: 'assistant', content: msg.aiResponse }; // Keep AI full response for context
     }
-    return null; // Should not happen with valid ChatMessage objects
-  }).filter(msg => msg !== null) as OpenAI.Chat.Completions.ChatCompletionMessageParam[];
+    return null;
+  }).filter(Boolean) as OpenAI.Chat.Completions.ChatCompletionMessageParam[];
 };
 
 export async function getOpenAiResponse(
   currentUserInput: UserInputAction,
-  chatHistory: ChatMessage[] = [] // Provide last few messages for context
+  chatHistory: ChatMessage[] = []
 ): Promise<string> {
   if (!process.env.OPENAI_API_KEY) {
     console.error('OpenAI API key not configured.');
-    throw new Error('OpenAI API key not configured.');
+    throw new Error('OpenAI API key not configured. Please set OPENAI_API_KEY environment variable.');
   }
 
-  const systemPrompt = `You are AIProductiv, a helpful assistant designed to enhance user productivity based on their current mode (Work, Study, Gaming), mood (Happy, Stressed, Tired, Energetic), and time of day. Provide concise, actionable advice, suggestions, or empathetic responses. If the mode is Gaming, suggest short breaks or game-related tips. If Study, offer focus techniques or learning resources. If Work, provide task management tips or stress relief suggestions. Tailor your response to their mood and time of day. Keep responses relatively brief and focused.`;
+  const systemPrompt = `You are AIProductiv, an advanced AI productivity assistant. Your goal is to provide 2-3 concrete, actionable, and engaging suggestions to help users be more productive or manage their current state based on their mode (Work, Study, Gaming), mood (Happy, Stressed, Tired, Energetic), and time of day.
 
-  const formattedHistory = formatHistoryForPrompt(chatHistory.slice(-4)); // Use last 4 messages for context
+Your response MUST be formatted using Markdown and should be structured clearly.
 
-  const userMessageContent = `Current context: Mode - ${currentUserInput.mode}, Mood - ${currentUserInput.mood}, Time - ${currentUserInput.timeOfDay}. My optional message: "${currentUserInput.message || '(No additional message)'}". What should I do or focus on?`;
+For each suggestion, consider including:
+1.  **Actionable Task:** What the user should DO (e.g., "Take a 5-minute mindful break", "Review your top 3 priorities for the day", "Try a 10-minute stretching routine").
+2.  **App/Site/Resource Recommendation:** Suggest a relevant app, website, YouTube video, Spotify playlist, or other online resource. If you suggest a link, provide it in Markdown format, e.g., [Resource Name](URL). For YouTube, try to find a relevant video. For music, try to suggest a genre or a playlist (e.g., [Lo-Fi Beats for Studying](https://open.spotify.com/playlist/your-suggested-playlist-id) or search query).
+3.  **AI-Generated Quote/Advice (Optional but encouraged):** A short, inspiring, or relevant quote or piece of advice related to the context.
+
+Structure your response with clear headings or bullet points for each of the 2-3 suggestions. Ensure variety in your suggestions.
+
+Example of how to format a suggestion with a link:
+-   **Suggestion 1: Focus Boost**
+    *   **Action:** Try the Pomodoro Technique for your next study block (25 min focus, 5 min break).
+    *   **Resource:** Check out this [Pomodoro Timer App](https://pomofocus.io/).
+    *   **Quote:** "The secret of getting ahead is getting started." - Mark Twain
+
+Tailor your response carefully to the user's current mode, mood, and time of day.
+If mode is Gaming: suggest short breaks, ergonomic tips, or game-related strategies.
+If mode is Study: offer focus techniques, learning resources, or break ideas.
+If mode is Work: provide task management tips, stress relief suggestions, or focus enhancers.
+
+Keep your overall response concise and easy to digest, even with multiple suggestions. Prioritize helpfulness and engagement.`;
+
+  const formattedHistory = formatHistoryForPrompt(chatHistory.slice(-4)); // Use last 4 messages (2 user, 2 AI turns typically)
+
+  const userMessageContent = 
+`My current situation:
+- Mode: ${currentUserInput.mode}
+- Mood: ${currentUserInput.mood}
+- Time of Day: ${currentUserInput.timeOfDay}
+${currentUserInput.message ? `- My Message: "${currentUserInput.message}"` : '(No additional message from me)'}
+
+Please provide 2-3 actionable and engaging suggestions based on this.`;
 
   const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
     { role: 'system', content: systemPrompt },
@@ -45,17 +75,17 @@ export async function getOpenAiResponse(
   try {
     console.log("Sending to OpenAI with messages:", JSON.stringify(messages, null, 2));
     const completion = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo', // Or 'gpt-4' if you have access and prefer it
+      model: 'gpt-3.5-turbo', // Or gpt-4 if preferred and available
       messages: messages,
-      temperature: 0.7, // Adjust for creativity vs. determinism
-      max_tokens: 150, // Adjust based on desired response length
+      temperature: 0.75, // Slightly higher for more creative/varied suggestions
+      max_tokens: 350,  // Increased to allow for more detailed, multi-part suggestions
       top_p: 1,
-      frequency_penalty: 0,
-      presence_penalty: 0,
+      frequency_penalty: 0.1, // Slightly penalize to reduce repetitive phrasing
+      presence_penalty: 0.1,  // Slightly encourage new topics/ideas
     });
 
     const responseContent = completion.choices[0]?.message?.content;
-    console.log("OpenAI Response Content:", responseContent);
+    console.log("OpenAI Raw Response Content:", responseContent);
 
     if (!responseContent) {
       throw new Error('No content in OpenAI response.');
@@ -64,7 +94,11 @@ export async function getOpenAiResponse(
 
   } catch (error) {
     console.error('Error fetching from OpenAI:', error);
-    // Consider more specific error handling or re-throwing a custom error
-    throw new Error('Failed to get response from AI assistant.');
+    let errorMessage = 'Failed to get response from AI assistant.';
+    if (error instanceof Error && error.message) {
+        errorMessage = error.message;
+    }
+    // It might be better to throw the original error or a more specific custom error
+    throw new Error(`OpenAI API Error: ${errorMessage}`);
   }
 } 

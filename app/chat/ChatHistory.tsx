@@ -1,10 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ChatMessage, UserInputAction } from './page'; // Import types from chat page
 import { Bot } from 'lucide-react';
 import Image from 'next/image'; // Import NextImage
 import { Session } from 'next-auth'; // Import Session type for currentUser prop
+import ReactMarkdown from 'react-markdown'; // Import ReactMarkdown
+import remarkGfm from 'remark-gfm';       // Import remarkGfm for GitHub Flavored Markdown
 
 interface ChatHistoryProps {
   messages: ChatMessage[];
@@ -37,7 +39,15 @@ const UserAvatar: React.FC<{ user?: Session['user'] }> = ({ user }) => {
 };
 
 const ChatHistory: React.FC<ChatHistoryProps> = ({ messages, isLoadingResponse, currentUser }) => {
-  // Scroll to bottom functionality can be added here later using a ref
+  const messagesEndRef = useRef<null | HTMLDivElement>(null); // Ref for scrolling
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom(); // Scroll to bottom whenever messages change
+  }, [messages]);
 
   const renderUserInput = (input: UserInputAction) => (
     <div className="p-3 bg-blue-600/80 rounded-lg rounded-tr-none shadow max-w-lg break-words">
@@ -49,8 +59,20 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ messages, isLoadingResponse, 
   );
 
   const renderAiResponse = (response: string) => (
-    <div className="p-3 bg-gray-700/80 rounded-lg rounded-tl-none shadow max-w-lg break-words">
-      <p className="text-white">{response}</p>
+    <div className="prose prose-sm prose-invert max-w-lg break-words bg-gray-700/80 p-3 rounded-lg rounded-tl-none shadow">
+      <ReactMarkdown 
+        remarkPlugins={[remarkGfm]} 
+        components={{
+          // Customize link rendering to open in new tabs and add styling
+          a: ({node, ...props}) => <a {...props} target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:text-purple-300 underline" />,
+          // You can add more custom renderers for other elements (h1, h2, ul, li, etc.) if needed for styling
+          // For example, to style bullet points:
+          // ul: ({node, ...props}) => <ul {...props} className="list-disc list-inside space-y-1" />,
+          // li: ({node, ...props}) => <li {...props} className="ml-4" />,
+        }}
+      >
+        {response}
+      </ReactMarkdown>
     </div>
   );
 
@@ -91,6 +113,8 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ messages, isLoadingResponse, 
             </div>
           </div>
         )}
+        {/* Div to mark the end of messages for scrolling */}
+        <div ref={messagesEndRef} /> 
       </div>
       {/* TODO: Add a ref and effect to scroll to bottom on new messages */}
     </div>
