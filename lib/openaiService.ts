@@ -73,7 +73,7 @@ Keep your overall response concise yet impactful. Prioritize genuine helpfulness
 
   const formattedHistory = formatHistoryForPrompt(chatHistory.slice(-4));
 
-  let userMessageContent = 
+  const userMessageContent = 
 `My current situation:
 ${userName ? `- My Name: ${userName} (You can call me ${userName})\n` : ''}- Mode: ${currentUserInput.mode}
 - Mood: ${currentUserInput.mood}

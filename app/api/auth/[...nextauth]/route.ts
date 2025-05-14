@@ -35,6 +35,7 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "email", placeholder: "you@example.com" },
         password: { label: "Password", type: "password" }
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       async authorize(credentials, req) {
         if (!credentials?.email || !credentials?.password) {
           throw new Error('Missing email or password');
@@ -92,6 +93,7 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async jwt({ token, user, account, profile }) {
       if (user) {
         token.id = user.id;

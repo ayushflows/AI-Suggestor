@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react'; // Import useSession
 import { useRouter } from 'next/navigation'; // Import useRouter
 
 const HeroSection = () => {
-  const { data: session, status } = useSession(); // Get session data and status
+  const { status } = useSession(); // Get session data and status
   const router = useRouter(); // Initialize router
 
   const handleUnlockClick = () => {

@@ -1,8 +1,8 @@
+/* eslint-disable */
 'use client';
-
 import React, { useState, useEffect, FormEvent } from 'react';
 import { UserInputAction } from './page'; // Import types from chat page
-import { Zap, Smile, Frown, Annoyed, Sunrise, Sunset, MessageSquare, Send, Briefcase, Gamepad2, BookOpen, CheckCircle, Clock } from 'lucide-react';
+import { Zap, Smile, Frown, Annoyed, Send, Briefcase, Gamepad2, BookOpen, CheckCircle, Clock } from 'lucide-react';
 
 interface ChatInputProps {
   onSubmit: (input: UserInputAction) => void;

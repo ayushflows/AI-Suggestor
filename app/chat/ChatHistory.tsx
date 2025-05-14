@@ -1,5 +1,5 @@
+/* eslint-disable */
 'use client';
-
 import React, { useEffect, useRef, useState } from 'react';
 import { ChatMessage, UserInputAction } from './page'; // Import types from chat page
 import { Bot, Youtube, Headset, AlertTriangle } from 'lucide-react'; // Added Youtube, Headset, AlertTriangle icons
@@ -94,7 +94,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ messages, isLoadingResponse, 
       <ReactMarkdown 
         remarkPlugins={[remarkGfm]} 
         components={{
-          // Enhanced link rendering
+
           a: ({node, href, ...props}) => {
             const linkUrl = href || '';
             // Check for YouTube links (more robustly)

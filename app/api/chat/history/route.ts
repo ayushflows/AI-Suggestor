@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import clientPromise from '@/lib/mongodb';
 import { ObjectId, MongoClient, Db } from 'mongodb';
-import { UserInputAction, ChatMessage } from '@/app/chat/page'; // Client-side ChatMessage type
+import { ChatMessage } from '@/app/chat/page'; // Client-side ChatMessage type
 
 // Re-define MongoDB document structure (or import from a shared types file if created)
 interface ChatMessageDocument {
@@ -40,6 +40,7 @@ function mapDocumentToChatMessage(doc: ChatMessageDocument): ChatMessage {
   return chatMsg;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);

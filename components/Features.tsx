@@ -36,7 +36,7 @@ const Features = () => {
             Supercharge Your Productivity
           </h2>
           <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-            AIProductiv isn't just an assistant; it's your strategic partner in achieving more with less stress.
+            AIProductiv isn&apos;t just an assistant; it&apos;s your strategic partner in achieving more with less stress.
           </p>
         </div>
 
