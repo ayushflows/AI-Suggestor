@@ -2,18 +2,41 @@
 
 import React from 'react';
 import { ChatMessage, UserInputAction } from './page'; // Import types from chat page
-import { Bot, UserCircle2 } from 'lucide-react';
+import { Bot } from 'lucide-react';
+import Image from 'next/image'; // Import NextImage
+import { Session } from 'next-auth'; // Import Session type for currentUser prop
 
 interface ChatHistoryProps {
   messages: ChatMessage[];
   isLoadingResponse: boolean;
+  currentUser?: Session['user']; // Add currentUser prop (optional because session might be loading)
 }
 
 const formatTime = (date: Date) => {
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 };
 
-const ChatHistory: React.FC<ChatHistoryProps> = ({ messages, isLoadingResponse }) => {
+const UserAvatar: React.FC<{ user?: Session['user'] }> = ({ user }) => {
+  if (user?.image) {
+    return (
+      <Image 
+        src={user.image} 
+        alt={user.name || 'User'} 
+        width={40} 
+        height={40} 
+        className="rounded-full flex-shrink-0"
+      />
+    );
+  }
+  const initials = user?.name ? user.name.charAt(0).toUpperCase() : (user?.email ? user.email.charAt(0).toUpperCase() : 'U');
+  return (
+    <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold text-lg flex-shrink-0">
+      {initials}
+    </div>
+  );
+};
+
+const ChatHistory: React.FC<ChatHistoryProps> = ({ messages, isLoadingResponse, currentUser }) => {
   // Scroll to bottom functionality can be added here later using a ref
 
   const renderUserInput = (input: UserInputAction) => (
@@ -44,7 +67,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ messages, isLoadingResponse }
         {messages.map((msg) => (
           <div key={msg.id} className={`flex items-end space-x-3 ${msg.isUser ? 'flex-row-reverse space-x-reverse' : ''}`}>
             {msg.isUser ? (
-              <UserCircle2 size={40} className="flex-shrink-0 text-blue-400" /> // Or user image if available
+              <UserAvatar user={currentUser} /> // Use UserAvatar component
             ) : (
               <div className="flex-shrink-0 w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center text-white font-semibold">
                 <Bot size={24} />

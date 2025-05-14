@@ -134,7 +134,11 @@ export default function ChatPage() {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 via-purple-950 to-black text-white pt-16 md:pt-20">
       <main className="flex-grow flex flex-col container mx-auto p-4 md:p-6 w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl">
-        <ChatHistory messages={chatMessages} isLoadingResponse={isLoadingResponse} />
+        <ChatHistory 
+          messages={chatMessages} 
+          isLoadingResponse={isLoadingResponse} 
+          currentUser={session?.user}
+        />
         <ChatInput onSubmit={handleNewChatMessage} isLoading={isLoadingResponse} />
       </main>
     </div>

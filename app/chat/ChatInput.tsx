@@ -96,22 +96,19 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSubmit, isLoading }) => {
         </div>
 
         <div>
-          <label htmlFor="timeOfDay" className="block text-sm font-medium text-gray-300 mb-1.5">Time of Day:</label>
+          <label className="block text-sm font-medium text-gray-300 mb-1.5">Detected Time of Day:</label>
           <div className="relative flex items-center">
             <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                 {timeOfDay === 'Morning' ? <Sunrise size={18} className="text-gray-400" /> : 
-                 timeOfDay === 'Afternoon' ? <Sunset size={18} className="text-gray-400" /> : // Placeholder, could use a Sun icon
+                 timeOfDay === 'Afternoon' ? <Sunset size={18} className="text-gray-400" /> : 
                  <Sunset size={18} className="text-gray-400" />} 
             </div>
-            <input 
-                id="timeOfDayInput" 
-                type="text" 
-                value={timeOfDay} 
-                onChange={(e) => setTimeOfDay(e.target.value)} 
-                disabled={isLoading}
-                placeholder="e.g., Morning, Afternoon, Evening"
-                className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-gray-700/90 border border-gray-600 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none text-white placeholder-gray-400 disabled:opacity-60"
-            />
+            <div 
+                id="timeOfDayDisplay"
+                className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-gray-700/90 border border-gray-600 text-white placeholder-gray-400"
+            >
+                {timeOfDay || 'Detecting...'}
+            </div>
           </div>
         </div>
 
