@@ -1,14 +1,45 @@
+import { BrainCircuit } from 'lucide-react'; // Or Bot, Zap, etc.
+
 const HeroSection = () => {
   return (
-    <section className="bg-gray-100 dark:bg-gray-900 py-20">
-      <div className="container mx-auto text-center">
-        <h1 className="text-4xl font-bold mb-4">Boost Your Productivity</h1>
-        <p className="text-lg text-gray-700 dark:text-gray-300 mb-8">
-          Your personal AI assistant to help you focus and achieve more.
-        </p>
-        <a href="/login" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded">
-          Get Started Now
-        </a>
+    <section className="min-h-screen flex flex-col justify-center relative overflow-hidden pt-24 md:pt-28 bg-gradient-to-br from-black via-purple-950/50 to-black">
+      {/* Optional: A very subtle, almost invisible pattern or noise layer if needed for texture */}
+      {/* <div className="absolute inset-0 z-0 opacity-5" style={{backgroundImage: 'url(...)'}}></div> */}
+
+      <div className="container mx-auto px-32 py-16 relative z-10 flex-grow flex items-center">
+        {/* Adjusted grid for 60/40 split: md:grid-cols-5, content md:col-span-3, illustration md:col-span-2 */}
+        <div className="grid md:grid-cols-5 gap-x-8 lg:gap-x-12 items-center w-full">
+          {/* Left Column: Content (60%) */}
+          <div className="md:col-span-3 text-center md:text-left">
+            {/* Reduced font size for headline */}
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-6 lg:mb-8 leading-tight">
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-orange-500 animate-text-pop">
+                Elevate Your Focus.
+              </span>
+              <span className="block text-gray-300 mt-2 sm:mt-3">
+                Conquer Your Day, Intelligently.
+              </span>
+            </h1>
+            {/* Reduced font size for paragraph */}
+            <p className="text-base sm:text-lg text-gray-400 mb-8 lg:mb-10 max-w-xl mx-auto md:mx-0">
+              AIProductiv is your personalized command center for peak performance. Seamlessly switch modes, get smart suggestions, and unlock your true potential with AI-driven insights.
+            </p>
+            <a 
+              href="/login" 
+              className="px-8 py-3.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-white text-lg font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 ease-in-out inline-block"
+            >
+              Unlock Productivity Now
+            </a>
+          </div>
+
+          {/* Right Column: Illustration Placeholder (40%) */}
+          <div className="md:col-span-2 hidden md:flex justify-center items-center relative mt-12 md:mt-0">
+            <BrainCircuit className="w-56 h-56 lg:w-72 lg:h-72 text-purple-500/50 animate-float" />
+            {/* Pulsing circles - kept subtle */}
+            <div className="absolute w-64 h-64 lg:w-80 lg:h-80 bg-purple-700/10 rounded-full animate-ping-slow -z-10"></div>
+            <div className="absolute w-52 h-52 lg:w-72 lg:w-72 bg-pink-700/05 rounded-full animate-ping-slower -z-10" style={{animationDelay: '1s'}}></div>
+          </div>
+        </div>
       </div>
     </section>
   );
