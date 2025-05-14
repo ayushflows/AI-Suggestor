@@ -53,13 +53,13 @@ const Navbar = () => {
               <span className="text-sm text-gray-300 hidden md:block truncate max-w-[150px]" title={session.user?.name || session.user?.email || 'User'}>
                 {session.user?.name || session.user?.email}
               </span>
-              <button
-                onClick={handleSignOut}
-                className="flex items-center px-3 py-2 sm:px-4 sm:py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white text-xs sm:text-sm font-medium shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 ease-in-out"
-              >
-                <LogOut className="w-4 h-4 mr-1 sm:mr-1.5" />
-                Logout
-              </button>
+              <button 
+              onClick={handleSignOut} 
+              className="flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+            >
+              <LogOut size={16} />
+              <span className="hidden sm:inline">Sign Out</span>
+            </button>
             </>
           ) : (
             // User is not logged in
