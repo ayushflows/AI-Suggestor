@@ -37,7 +37,7 @@ const HeroSection = () => {
             <BrainCircuit className="w-56 h-56 lg:w-72 lg:h-72 text-purple-500/50 animate-float" />
             {/* Pulsing circles - kept subtle */}
             <div className="absolute w-64 h-64 lg:w-80 lg:h-80 bg-purple-700/10 rounded-full animate-ping-slow -z-10"></div>
-            <div className="absolute w-52 h-52 lg:w-72 lg:w-72 bg-pink-700/05 rounded-full animate-ping-slower -z-10" style={{animationDelay: '1s'}}></div>
+            <div className="absolute w-52 h-52 lg:w-72  bg-pink-700/05 rounded-full animate-ping-slower -z-10" style={{animationDelay: '1s'}}></div>
           </div>
         </div>
       </div>
