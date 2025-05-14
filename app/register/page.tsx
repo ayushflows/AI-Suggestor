@@ -1,20 +1,66 @@
+'use client';
+
 import Link from 'next/link';
 import { User, Mail, Lock, UserPlus } from 'lucide-react';
-
-// Using a simple Google icon component
-const GoogleIcon = () => (
-  <svg className="w-5 h-5 mr-3 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path d="M22.56,12.25C22.56,11.47 22.49,10.72 22.36,10H12.27V14.44H18.07C17.78,15.93 16.93,17.22 15.57,18.12V20.86H19.2C21.36,18.92 22.56,15.93 22.56,12.25Z" />
-    <path d="M12.27,24C15.3,24 17.82,23.04 19.2,21.36L15.57,18.12C14.57,18.82 13.47,19.22 12.27,19.22C9.97,19.22 8,17.63 7.27,15.41H3.58V18.21C5.13,21.55 8.48,24 12.27,24Z" />
-    <path d="M7.27,15.41C7.07,14.82 6.95,14.19 6.95,13.5C6.95,12.81 7.07,12.18 7.27,11.59V8.79H3.58C2.88,10.09 2.44,11.73 2.44,13.5C2.44,15.27 2.88,16.91 3.58,18.21L7.27,15.41Z" />
-    <path d="M12.27,6.78C13.75,6.78 14.97,7.28 15.88,8.14L19.26,4.86C17.82,3.49 15.3,2.56 12.27,2.56C8.48,2.56 5.13,5.04 3.58,8.79L7.27,11.59C8,9.37 9.97,6.78 12.27,6.78Z" />
-  </svg>
-);
+import Image from 'next/image';
+import { signIn } from 'next-auth/react';
+import React, { useState, FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function RegisterPage() {
+  const router = useRouter();
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleGoogleSignUp = async () => {
+    setIsLoading(true);
+    await signIn('google', { callbackUrl: '/chat' });
+  };
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setError(null);
+    setIsLoading(true);
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      setIsLoading(false);
+      return;
+    }
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long.");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.message || 'Something went wrong during registration.');
+      } else {
+        router.push('/login?registered=true');
+      }
+    } catch (err) {
+      console.error("Registration fetch error:", err);
+      setError('An unexpected error occurred. Please try again.');
+    }
+    setIsLoading(false);
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-purple-950 to-black p-6 sm:p-8">
-      <div className="w-full max-w-lg p-8 sm:p-10 space-y-8 bg-gray-800/60 backdrop-blur-lg shadow-2xl rounded-xl border border-gray-700/80">
+      <div className="w-full max-w-lg p-8 sm:p-10 space-y-7 bg-gray-800/60 backdrop-blur-lg shadow-2xl rounded-xl border border-gray-700/80">
         <div className="text-center space-y-2">
           <Link href="/" className="text-3xl sm:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-orange-400 hover:from-pink-500 hover:to-purple-500 transition duration-300 ease-in-out inline-block">
             AIProductiv
@@ -23,7 +69,9 @@ export default function RegisterPage() {
           <p className="text-sm text-gray-400">Join us and unlock your full potential.</p>
         </div>
 
-        <form className="space-y-5">
+        {error && <p className="text-center text-red-400 bg-red-900/30 p-3 rounded-md mb-4">{error}</p>}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="fullName" className="block text-sm font-medium text-gray-300 mb-1.5">Full Name</label>
             <div className="relative">
@@ -35,8 +83,11 @@ export default function RegisterPage() {
                 name="fullName"
                 type="text"
                 autoComplete="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 required
-                className="block w-full pl-12 pr-4 py-3 border border-gray-600 rounded-lg shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 sm:text-sm bg-gray-700/80 text-white"
+                disabled={isLoading}
+                className="block w-full pl-12 pr-4 py-3 border border-gray-600 rounded-lg shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 sm:text-sm bg-gray-700/80 text-white disabled:opacity-70"
                 placeholder="Your Name"
               />
             </div>
@@ -53,8 +104,11 @@ export default function RegisterPage() {
                 name="email"
                 type="email"
                 autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
-                className="block w-full pl-12 pr-4 py-3 border border-gray-600 rounded-lg shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 sm:text-sm bg-gray-700/80 text-white"
+                disabled={isLoading}
+                className="block w-full pl-12 pr-4 py-3 border border-gray-600 rounded-lg shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 sm:text-sm bg-gray-700/80 text-white disabled:opacity-70"
                 placeholder="you@example.com"
               />
             </div>
@@ -71,8 +125,11 @@ export default function RegisterPage() {
                 name="password"
                 type="password"
                 autoComplete="new-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
-                className="block w-full pl-12 pr-4 py-3 border border-gray-600 rounded-lg shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 sm:text-sm bg-gray-700/80 text-white"
+                disabled={isLoading}
+                className="block w-full pl-12 pr-4 py-3 border border-gray-600 rounded-lg shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 sm:text-sm bg-gray-700/80 text-white disabled:opacity-70"
                 placeholder="Choose a strong password"
               />
             </div>
@@ -89,8 +146,11 @@ export default function RegisterPage() {
                 name="confirmPassword"
                 type="password"
                 autoComplete="new-password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 required
-                className="block w-full pl-12 pr-4 py-3 border border-gray-600 rounded-lg shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 sm:text-sm bg-gray-700/80 text-white"
+                disabled={isLoading}
+                className="block w-full pl-12 pr-4 py-3 border border-gray-600 rounded-lg shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 sm:text-sm bg-gray-700/80 text-white disabled:opacity-70"
                 placeholder="Confirm your password"
               />
             </div>
@@ -99,9 +159,20 @@ export default function RegisterPage() {
           <div className="pt-2">
             <button
               type="submit"
-              className="w-full flex justify-center items-center py-3.5 px-4 border border-transparent rounded-lg shadow-lg text-base font-medium text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-purple-500 transition-all duration-300 transform hover:scale-105 active:scale-95"
+              disabled={isLoading}
+              className="w-full flex justify-center items-center py-3.5 px-4 border border-transparent rounded-lg shadow-lg text-base font-medium text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-purple-500 transition-all duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              <UserPlus className="w-5 h-5 mr-2.5" /> Create Account
+              {isLoading ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Registering...
+                </>
+              ) : (
+                <><UserPlus className="w-5 h-5 mr-2.5" /> Create Account</>
+              )}
             </button>
           </div>
         </form>
@@ -118,9 +189,11 @@ export default function RegisterPage() {
         <div>
           <button
             type="button"
-            className="w-full flex justify-center items-center py-3 px-4 border border-gray-600 rounded-lg shadow-sm bg-gray-700/60 hover:bg-gray-700/80 text-sm font-medium text-gray-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-purple-500 transition-all duration-300"
+            onClick={handleGoogleSignUp}
+            disabled={isLoading}
+            className="w-full flex justify-center items-center py-3 px-4 border border-gray-600 rounded-lg shadow-sm bg-gray-700/60 hover:bg-gray-700/80 text-sm font-medium text-gray-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-purple-500 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            <GoogleIcon /> Sign up with Google
+            <Image src="https://authjs.dev/img/providers/google.svg" alt="Google icon" width={20} height={20} className="mr-3" /> Sign up with Google
           </button>
         </div>
 

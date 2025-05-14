@@ -1,6 +1,21 @@
+'use client'; // Make this a Client Component
+
 import { BrainCircuit } from 'lucide-react'; // Or Bot, Zap, etc.
+import { useSession } from 'next-auth/react'; // Import useSession
+import { useRouter } from 'next/navigation'; // Import useRouter
 
 const HeroSection = () => {
+  const { data: session, status } = useSession(); // Get session data and status
+  const router = useRouter(); // Initialize router
+
+  const handleUnlockClick = () => {
+    if (status === 'authenticated') {
+      router.push('/chat'); // Redirect to /chat if authenticated
+    } else {
+      router.push('/login'); // Redirect to /login if not authenticated
+    }
+  };
+
   return (
     <section className="min-h-screen flex flex-col justify-center relative overflow-hidden pt-24 md:pt-28 bg-gradient-to-br from-black via-purple-950/50 to-black">
       {/* Optional: A very subtle, almost invisible pattern or noise layer if needed for texture */}
@@ -24,12 +39,13 @@ const HeroSection = () => {
             <p className="text-base sm:text-lg text-gray-400 mb-8 lg:mb-10 max-w-xl mx-auto md:mx-0">
               AIProductiv is your personalized command center for peak performance. Seamlessly switch modes, get smart suggestions, and unlock your true potential with AI-driven insights.
             </p>
-            <a 
-              href="/login" 
+            {/* Updated button: Use onClick handler instead of href */}
+            <button 
+              onClick={handleUnlockClick} 
               className="px-8 py-3.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-white text-lg font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 ease-in-out inline-block"
             >
-              Unlock Productivity Now
-            </a>
+              {status === 'loading' ? 'Loading...' : 'Unlock Productivity Now'}
+            </button>
           </div>
 
           {/* Right Column: Illustration Placeholder (40%) */}
