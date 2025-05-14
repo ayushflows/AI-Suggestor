@@ -148,7 +148,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ messages, isLoadingResponse, 
   );
 
   return (
-    <div className="flex-grow overflow-y-auto scroll-smooth px-4 pt-4 scrollbar-thin scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500 scrollbar-track-transparent scrollbar-thumb-rounded-full">
+    <div className="flex-grow overflow-y-auto scroll-smooth px-4 pt-4">
     <div className=' w-full mx-auto max-w-3xl lg:max-w-5xl xl:max-w-6xl'>
       {messages.length === 0 && !isLoadingResponse && (
           <div className="flex flex-col items-center justify-center h-full text-gray-500">

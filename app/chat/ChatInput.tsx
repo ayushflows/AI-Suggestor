@@ -90,7 +90,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSubmit, isLoading }) => {
   );
 
   return (
-    <form onSubmit={handleSubmit} className="bg-gray-800/80 backdrop-blur-sm border-t border-gray-700/70 shadow-2xl p-3 md:p-4 flex-shrink-0 w-full mx-auto max-w-3xl lg:max-w-5xl xl:max-w-6xl">
+    <form onSubmit={handleSubmit} className="bg-gray-800/80 backdrop-blur-sm border-t border-gray-700/70 shadow-2xl p-3 md:p-4 flex-shrink-0 w-full mx-auto max-w-3xl lg:max-w-5xl xl:max-w-6xl mt-2">
       {/* Top row for selectors and time of day */}
       <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 md:gap-4 mb-3">
         <div className="flex-grow grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3">
