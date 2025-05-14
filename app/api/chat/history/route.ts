@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/authOptions';
 import clientPromise from '@/lib/mongodb';
 import { ObjectId, MongoClient, Db } from 'mongodb';
 import { ChatMessage } from '@/app/chat/page'; // Client-side ChatMessage type
